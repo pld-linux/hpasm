@@ -33,25 +33,67 @@ Agent. This information is available using the hp Insight Manager
 Console, any Internet browser, or other management applications using
 SNMP.
 
+%package static
+Summary:	Static ... library
+Group:		Development/Libraries
+#Requires:	%{name}-devel = %{version}-%{release}
+
+%description static
+Static ... library.
+
 %prep
 %setup -qcT
 rpm2cpio %{SOURCE0} | cpio -i -d
 gzip -d usr/share/man/man*/*.gz
 
+# move to real locations instead of symlinks
+install -d .{/%{_lib},/lib,%{_libdir},%{_prefix}/lib}
+D=$(pwd)
+cd opt/compaq/utils
+mv bootcfg $D/sbin
+mv cpqimlview $D/sbin
+mv cpqimlview.tcl $D/sbin
+mv hpasmcli $D/sbin
+mv hpimlview $D/sbin
+mv hplog $D/sbin
+mv hpuid $D/sbin
+mv imlbe $D/sbin
+cd -
+
+cd opt/compaq/utils
+mv hplogo.xbm $D%{_pixmapsdir}
+mv m_blue.gif $D%{_pixmapsdir}
+mv m_fail.gif $D%{_pixmapsdir}
+mv m_green.gif $D%{_pixmapsdir}
+mv m_red.gif $D%{_pixmapsdir}
+mv m_yellow.gif $D%{_pixmapsdir}
+cd -
+
+%if "%{_lib}" == "lib64"
+mv opt/compaq/hpasm/addon/lib*64.so* $D/%{_lib}
+mv opt/compaq/hpasm/addon/lib*64.a $D%{_libdir}
+%endif
+mv opt/compaq/hpasm/addon/lib*so* $D/lib
+mv opt/compaq/hpasm/addon/lib*a $D%{_prefix}/lib
+
 %install
 rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT/sbin
-cd opt/compaq/utils
-install bootcfg $RPM_BUILD_ROOT/sbin
-install cpqimlview $RPM_BUILD_ROOT/sbin
-install cpqimlview.tcl $RPM_BUILD_ROOT/sbin
-install hpasmcli $RPM_BUILD_ROOT/sbin
-install hpimlview $RPM_BUILD_ROOT/sbin
-install hplog $RPM_BUILD_ROOT/sbin
-install hpuid $RPM_BUILD_ROOT/sbin
-install imlbe $RPM_BUILD_ROOT/sbin
-cd -
+install sbin/* $RPM_BUILD_ROOT/sbin
+
+install -d $RPM_BUILD_ROOT{/%{_lib},/lib,%{_libdir},%{_prefix}/lib}
+cp -a ./%{_lib}/* $RPM_BUILD_ROOT/%{_lib}
+%if "%{_lib}" != "lib"
+cp -a ./lib/* $RPM_BUILD_ROOT/lib
+%endif
+cp -a ./%{_libdir}/* $RPM_BUILD_ROOT%{_libdir}
+%if "%{_lib}" != "lib"
+cp -a ./%{_prefix}/lib/* $RPM_BUILD_ROOT%{_prefix}/%{_lib}
+%endif
+
+install -d $RPM_BUILD_ROOT%{_pixmapsdir}
+cp -a ./%{_pixmapsdir}/* $RPM_BUILD_ROOT%{_pixmapsdir}
 
 install -d $RPM_BUILD_ROOT/etc/rc.d/init.d
 install etc/init.d/hpasm $RPM_BUILD_ROOT/etc/rc.d/init.d
@@ -60,21 +102,15 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man{4,8}
 cp -a usr/share/man/man4/* $RPM_BUILD_ROOT%{_mandir}/man4
 cp -a usr/share/man/man8/* $RPM_BUILD_ROOT%{_mandir}/man8
 
-install -d $RPM_BUILD_ROOT%{_pixmapsdir}
-cd opt/compaq/utils
-cp -a hplogo.xbm $RPM_BUILD_ROOT%{_pixmapsdir}
-cp -a m_blue.gif $RPM_BUILD_ROOT%{_pixmapsdir}
-cp -a m_fail.gif $RPM_BUILD_ROOT%{_pixmapsdir}
-cp -a m_green.gif $RPM_BUILD_ROOT%{_pixmapsdir}
-cp -a m_red.gif $RPM_BUILD_ROOT%{_pixmapsdir}
-cp -a m_yellow.gif $RPM_BUILD_ROOT%{_pixmapsdir}
-cd -
-
 # opt/hp/hpsmh/
 # opt/compaq/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+
+%post	-p /sbin/ldconfig
+%postun	-p /sbin/ldconfig
 
 %files
 %defattr(644,root,root,755)
@@ -87,6 +123,16 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) /sbin/hplog
 %attr(755,root,root) /sbin/hpuid
 %attr(755,root,root) /sbin/imlbe
+%attr(755,root,root) /lib/libcmacommon.so.1.0
+%attr(755,root,root) /lib/libcmapeer.so.1.0
+%attr(755,root,root) /lib/libcpqci.so.1.0
+%attr(755,root,root) /lib/libhpasmintrfc.so.1.0
+%attr(755,root,root) /lib/libhpev.so.1.0
+%if "%{_lib}" == "lib64"
+%attr(755,root,root) /%{_lib}/libcmaX64.so.1.0
+%attr(755,root,root) /%{_lib}/libcpqci64.so.1.0
+%attr(755,root,root) /%{_lib}/libhpasmintrfc64.so.1.0
+%endif
 %{_mandir}/man4/hpasm.4*
 %{_mandir}/man4/hpasmcli.4*
 %{_mandir}/man8/cpqimlview.8*
@@ -98,3 +144,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_pixmapsdir}/m_green.gif
 %{_pixmapsdir}/m_red.gif
 %{_pixmapsdir}/m_yellow.gif
+
+%files static
+%defattr(644,root,root,755)
+%{_libdir}/libcpqci*.a
