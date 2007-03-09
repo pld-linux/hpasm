@@ -1,4 +1,5 @@
 Summary:	HP Server Management Drivers and Agents
+Summary(pl.UTF-8):	Sterowniki i agenci HP Server Management
 Name:		hpasm
 Version:	7.7.0
 Release:	0.1
@@ -19,12 +20,12 @@ provides extended capabilities to ProLiant Servers. These capabilities
 include monitoring of temperature thresholds, fan, processor and
 memory failures. Should a parameter be out of normal operating
 conditions, the Linux operating system will be automatically shutdown.
-The hp Advanced Server Management Application(hpasmd) is the interface
-to the Advanced Server Management (ASM) ASIC. This application will
-work with both the P roLiant ASM (0x0E11A0F1) and the ProLiant iLO
-Advance Server Management (0x0E11B203) ASICs. The hpasmd also provides
-an inter face so other software can log events to the hp ProLiant
-Integrated Management Log (IML).
+The hp Advanced Server Management Application (hpasmd) is the
+interface to the Advanced Server Management (ASM) ASIC. This
+application will work with both the ProLiant ASM (0x0E11A0F1) and the
+ProLiant iLO Advanced Server Management (0x0E11B203) ASICs. The hpasmd
+also provides an interface so other software can log events to the hp
+ProLiant Integrated Management Log (IML).
 
 hp Server, Storage and Foundation Agents for Linux provide a full
 spectrum of management data. This package includes the Server Standard
@@ -33,13 +34,36 @@ Agent. This information is available using the hp Insight Manager
 Console, any Internet browser, or other management applications using
 SNMP.
 
+%description -l pl.UTF-8
+Pakiet HP System Health Application and Insight Management Agents
+udostępnia rozszerzone możliwości dla serwerów ProLiant. Obejmują one
+monitorowanie poziomów temperatury, wiatraków oraz błędów procesora i
+pamięci. Jeśli któryś parametr wykracza poza normalne warunki, system
+Linux zostanie automatycznie zatrzymany. hpasmd (HP Advanced Server
+Management Application) to interfejs do ASIC-a ASM (Advanced Server
+Management). Aplikacja ta działa zarówno z ASIC-em ProLiant ASM
+(0x0E11A0F1) jak i ProLiant iLo ASM (0x0E11B203). hpasmd udostępnia
+również interfejs pozwalający innym programom logować zdarzenia do
+zintegrowanego loga IML (HP ProLiant Integrated Management Log).
+
+Pakiet HP Server, Storage and Foundation Agents for Linux udostępnia
+pełne spektrum zarządzania danymi. Pakiet ten zawiera także agenta
+Server Standard Equipment and Health Agent dla serwerów HP. Zawiera
+także agenta WWW HP. Informacje te są dostępne przy użyciu konsoli
+HP Insight Managera, dowolnej przeglądarki WWW lub innej aplikacji
+zarządzającej używającej SNMP.
+
 %package static
-Summary:	Static ... library
+Summary:	Static hpasm libraries
+Summary(pl.UTF-8):	Statyczne biblioteki hpasm
 Group:		Development/Libraries
 #Requires:	%{name}-devel = %{version}-%{release}
 
 %description static
-Static ... library.
+Static hpasm library.
+
+%description static -l pl.UTF-8
+Statyczne biblioteki hpasm.
 
 %prep
 %setup -qcT
@@ -107,7 +131,6 @@ cp -a usr/share/man/man8/* $RPM_BUILD_ROOT%{_mandir}/man8
 
 %clean
 rm -rf $RPM_BUILD_ROOT
-
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
